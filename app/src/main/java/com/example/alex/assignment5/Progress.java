@@ -141,19 +141,6 @@ public class Progress extends Fragment
 
         Notifier notifier = new Notifier("Team2User1",adapter);
         ArrayList<String> notiflist = notifier.getNotificationList();
-
-        // Inflate the layout for this fragment
-        add = (Button) view.findViewById(R.id.addEntry);
-        add.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                //adapter.add(new ProgressEntry("test", "test",0,0));
-                adapter.add("a message");
-                adapter.notifyDataSetChanged();
-            }
-        });
         return view;
     }
 
