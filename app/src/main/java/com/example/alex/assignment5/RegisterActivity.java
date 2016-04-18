@@ -12,12 +12,22 @@ package com.example.alex.assignment5;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
+import com.example.alex.assignment5.cloudService.cloudAPIClass;
+import com.example.alex.assignment5.cloudService.cloudAPIClient;
+import com.example.alex.assignment5.cloudService.usersPostResponse;
+
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by Alex on 3/27/2016.
@@ -26,12 +36,17 @@ public class RegisterActivity extends AppCompatActivity
 {
     // The string value that is transmitted by the Intent upon user verification
     public final static String NEW_USER_INFO = "com.example.alex.MESSAGE";
+    private cloudAPIClient apiService;
+    private cloudAPIClass apiClass;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
+        apiService = apiClass.getApiClient();
 
         // The sign-up button implements an OnClickListener to verify user credentials
         ImageButton signupButton = (ImageButton)findViewById(R.id.registerButton);
@@ -75,6 +90,25 @@ public class RegisterActivity extends AppCompatActivity
     // This function is called when the user inputs a valid username and password combination
     public void register(View view)
     {
+        retrofit2.Call call = apiService.userCreate();
+
+        call.enqueue(new Callback<usersPostResponse>() {
+            @Override
+            public void onResponse(retrofit2.Call call, Response response) {
+                if(response.isSuccessful())
+                    Log.d("good", "Gucci");
+                else {
+                    Log.d("bad", "non successful");
+                    Log.d("bad", "status code=" + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call call, Throwable t) {
+                Log.d("bad", "failure");
+            }
+        });
+
         // Uses an Intent to transmit user credentials between activities
         Intent intent = new Intent(this, MainMenuActivity.class);
 

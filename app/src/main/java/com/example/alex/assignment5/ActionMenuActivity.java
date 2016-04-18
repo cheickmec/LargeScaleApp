@@ -11,20 +11,35 @@ building tasks and operations.
  */
 package com.example.alex.assignment5;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.alex.assignment5.Progress;
+import com.example.alex.assignment5.cloudService.cloudAPIClass;
+import com.example.alex.assignment5.cloudService.cloudAPIClient;
+import com.example.alex.assignment5.cloudService.nullReturnClass;
+import com.example.alex.assignment5.cloudService.sensorRequest;
+import com.example.alex.assignment5.cloudService.usersPostResponse;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by Alex on 3/27/2016.
@@ -33,15 +48,22 @@ public class ActionMenuActivity extends AppCompatActivity implements Progress.Pr
 {
     public final static String PROG_FRAG = "PROG";
     private Progress progFrag;
-
+    private cloudAPIClient apiService;
+    private cloudAPIClass apiClass;
     // The fragment manager inserts and removes fragments from the frame layout
     private FragmentManager fm;
+    private String typeSensor;
+    private String id;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fourth);
+
+
+        apiService = apiClass.getApiClient();
 
         fm = getFragmentManager();
 
@@ -117,12 +139,86 @@ public class ActionMenuActivity extends AppCompatActivity implements Progress.Pr
 
     public void goToSensors(View v)
     {
-        Intent intent = new Intent(this, ListSensorsActivity.class);
-        startActivity(intent);
+        retrofit2.Call call = apiService.sensorCreate();
+
+        call.enqueue(new Callback<usersPostResponse>() {
+            @Override
+            public void onResponse(retrofit2.Call<usersPostResponse> call, Response<usersPostResponse> response) {
+                usersPostResponse usersResp = response.body();
+                id = usersResp.getId();
+
+
+                if(response.isSuccessful()) {
+                    Log.d("good", "Gucci");
+
+                }
+                else
+                    Log.d("bad", "not success");
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call call, Throwable t) {
+                Log.d("bad", "fafa");
+            }
+        });
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        final EditText textBox1 = new EditText(this);
+
+        dialogBuilder.setTitle("Give the type of the sensor");
+        dialogBuilder.setMessage("What is the type");
+        dialogBuilder.setView(textBox1);
+        dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                typeSensor = textBox1.getText().toString();
+                retrofit2.Call call = apiService.sensorUpdate(new sensorRequest(typeSensor), id);
+
+                call.enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(retrofit2.Call<Void> call, Response<Void> response) {
+                        if(response.isSuccessful())
+                            Log.d("good", "Gucci");
+                        else {
+                            Log.d("bad", "not successful");
+                            Log.d("bad", "status code=" + response.code());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call call, Throwable t) {
+                        Log.d("bad", "fafa");
+                        Log.d("bad", "status code=" + t.getMessage());
+                    }
+                });
+            }
+        });
+        AlertDialog getType = dialogBuilder.create();
+        getType.show();
+        //Intent intent = new Intent(this, ListSensorsActivity.class);
+        //startActivity(intent);
     }
 
     public void goToRobots(View v)
     {
+        /*
+        retrofit2.Call call = apiService.robotCreate();
+
+        call.enqueue(new Callback<usersPostResponse>() {
+            @Override
+            public void onResponse(retrofit2.Call call, Response response) {
+                if(response.isSuccessful())
+                    Log.d("good", "Gucci");
+                else
+                    Log.d("bad", "not success");
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call call, Throwable t) {
+                Log.d("bad", "fafa");
+            }
+        });
+        */
         Intent intent = new Intent(this, ListRobotsActivity.class);
         startActivity(intent);
     }
