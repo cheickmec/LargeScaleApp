@@ -7,21 +7,11 @@
               tools:context="org.fitex.homework2.fragments.Progress"
               android:background="@drawable/gradient">
 
-    <TextView
+    <fragment
+        android:id="@+id/fragment1"
+        android:name="com.example.alex.assignment5.Progress"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:id="@+id/addEntry"
-        android:text="Notifications"
-        android:autoText="false"
-        android:textAlignment="center"
-        android:textColor="#000000"
-        android:textStyle="bold"
-        android:typeface="normal"
-        android:textSize="25dp" />
+        android:layout_height="match_parent"
+        tools:layout="@layout/list_fragment"/>
 
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/progressList"
-        android:layout_gravity="center_horizontal"/>
 </LinearLayout>

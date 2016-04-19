@@ -21,7 +21,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class Notifier {
 
     Progress.ProgressEntryAdapter adapter;
-
+    private List<Message> msgs;
     public Notifier(String usr){
         userid = usr;
         notificationList = new ArrayList<String>();
@@ -39,6 +39,9 @@ public class Notifier {
         getNotifications();
         return notificationList;
     }
+    public void removeAt(int pos){
+        //TODO: make Http delete call
+    }
     private void getNotifications(){
 
         Log.d("Try", "hello");
@@ -54,13 +57,13 @@ public class Notifier {
                              Response<PushMessage> resp = response;
                              if (response.isSuccessful()){
                                  PushMessage result = response.body();
-                                 List<Message> nsg = result.getMessages();
-
+                                 msgs = result.getMessages();
                                  List<String> results = new ArrayList<String>();
 
-                                 for (int h = 0; h < nsg.size(); h++) {
-                                     Message mm = nsg.get(h);
+                                 for (int h = 0; h < msgs.size(); h++) {
+                                     Message mm = msgs.get(h);
                                      String id = mm.getMessageId();
+                                     System.out.println(id);
                                      MSG msg = mm.getMSG();
                                      NotificationDisplay notif = new NotificationDisplay(msg);
                                      notificationList.add(notif.NotificationText);
@@ -76,9 +79,6 @@ public class Notifier {
                              else{
                                  Log.d("bad", "fafa");
                              }
-                             ArrayList<String> test = notificationList;
-
-
                          }
 
                          @Override
@@ -86,18 +86,8 @@ public class Notifier {
                              Log.d("bad2", "tata");
 
                          }
-
                      }
         );
-
-        //   try{
-        //      call.wait();
-        // }
-        // catch (InterruptedException e) {
-        //    e.printStackTrace();
-        // }
-
-        ArrayList<String> test2 = notificationList;
 
     }
 
